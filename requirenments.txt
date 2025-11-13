@@ -1,0 +1,57 @@
+# Frontend Dependencies
+react==18.2.0
+react-dom==18.2.0
+react-scripts==5.0.1
+web-vitals==2.1.4
+
+# Backend Dependencies (MAX Bot)
+@maxhub/max-bot-api==latest
+dotenv==16.3.1
+
+# Development Tools
+nodejs>=16.0.0
+npm>=8.0.0
+
+# Runtime Environment
+web-browser (chrome>=90, firefox>=88, safari>=14, edge>=90)
+
+# External APIs
+newsapi.org (REST API)
+
+# Containerization
+docker>=20.0.0
+docker-compose>=2.0.0
+
+# Build Tools
+create-react-app==5.0.1
+
+# Package Management
+npm>=8.0.0
+
+# CSS Features
+css3 (flexbox, grid, animations)
+
+# JavaScript Features
+ES6+ (modules, async/await, destructuring)
+
+# Storage
+local-storage (browser)
+
+# HTTP Client
+fetch-api
+
+# Date Handling
+intl (internationalization API)
+
+# Responsive Design
+media-queries
+mobile-first
+
+# Icons & Emojis
+unicode-emoji
+utf-8
+
+# Security Features
+CORS
+HTTPS
+content-security-policy

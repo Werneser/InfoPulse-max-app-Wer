@@ -1,0 +1,17 @@
+{
+  "name": "infopulse-max-bot",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon bot.js",
+    "start": "node bot.js",
+    "debug": "node --inspect bot.js"
+  },
+  "dependencies": {
+    "@maxhub/max-bot-api": "latest",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}

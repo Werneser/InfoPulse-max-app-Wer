@@ -1,0 +1,19 @@
+# certs/openssl.cnf
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+prompt = no
+
+[req_distinguished_name]
+CN = 192.168.117.106
+
+[v3_req]
+keyUsage = keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[alt_names]
+IP.1 = 192.168.117.106
+DNS.1 = localhost
+IP.2 = 127.0.0.1
+DNS.2 = ::1
