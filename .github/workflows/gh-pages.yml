@@ -19,6 +19,9 @@ jobs:
           
       - name: Install dependencies
         run: npm ci --include=dev
+        
+      - name: Create env for build
+        run: echo "VITE_NEWS_API_KEY=${{ secrets.NEWS_API_KEY }}" > .env.production
       - name: Build (node fallback for vite)
         run: |
           if [ -f node_modules/vite/bin/vite.js ]; then
