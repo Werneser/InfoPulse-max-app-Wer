@@ -9,20 +9,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - uses: actions/checkout@v4
 
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-
+          cache: 'npm'
+          
       - name: Install dependencies
-        run: npm install
+        run: npm ci --include=dev
+        
+      - name: Debug
+        run: ls -la node_modules/.bin || true
 
-      - name: Build
-        run: npx vite build
-
+      - name: Try build via node (reliable fallback)
+        run: |
+          if [ -f node_modules/vite/bin/vite.js ]; then
+            node ./node_modules/vite/bin/vite.js build
+          else
+            echo "vite binary not found, fall back to npx"
+            npx vite build
+            fi
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
