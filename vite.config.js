@@ -9,7 +9,6 @@ export default defineConfig(() => {
     const keyPath = path.join(certDir, 'dev.key')
     const certPath = path.join(certDir, 'dev.crt')
 
-    // если сертификатов нет, Vite всё равно запустится по http
     const httpsConfig = fs.existsSync(keyPath) && fs.existsSync(certPath)
         ? {
             key: fs.readFileSync(keyPath),
@@ -18,9 +17,10 @@ export default defineConfig(() => {
         : false
 
     return {
+        base: '/InfoPulse-max-app-Wer/',
         plugins: [react()],
         server: {
-            host: true,       // слушать все интерфейсы (0.0.0.0)
+            host: true,       
             port: 3000,
             https: httpsConfig
         }
