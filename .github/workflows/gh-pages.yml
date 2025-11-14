@@ -18,10 +18,10 @@ jobs:
           node-version: '18' # можно указать нужную версию
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci --include=dev
 
       - name: Build
-        run: npm run build
+        run: npx vite build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
