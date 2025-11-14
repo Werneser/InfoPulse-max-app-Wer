@@ -849,118 +849,134 @@ const getTimeFilterLabel = (timePattern) => {
 
 // Главный компонент приложения
 // Главный компонент приложения
-const STORAGE_KEY = 'infopulse-favorites'
 const App = () => {
   const [activeSection, setActiveSection] = useState('main')
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [favorites, setFavorites] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      return saved ? JSON.parse(saved) : []
-    } catch (e) {
-      console.warn('Ошибка чтения favorites из localStorage', e)
-      return []
-    }
+    const saved = localStorage.getItem('infopulse-favorites')
+    return saved ? JSON.parse(saved) : []
   })
-  // Сохраняем избранное в localStorage (с защитой)
+
+  // Сохраняем избранное в localStorage
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites))
-    } catch (e) {
-      console.warn('Ошибка записи favorites в localStorage', e)
-    }
+    localStorage.setItem('infopulse-favorites', JSON.stringify(favorites))
   }, [favorites])
-  // Добавление/удаление в избранное — переключатель (toggle)
+
+  // Добавление в избранное
   const addToFavorites = useCallback((article) => {
-    if (!article || !article.url) return
     setFavorites(prev => {
-      const exists = prev.some(fav => fav.url === article.url)
-      if (exists) {
-        // если уже есть — удаляем (toggle)
+      const isAlreadyFavorite = prev.some(fav => fav.url === article.url)
+      if (isAlreadyFavorite) {
         return prev.filter(fav => fav.url !== article.url)
+      } else {
+        return [...prev, { ...article, addedAt: new Date().toISOString() }]
       }
-      // добавляем с метаданными
-      return [...prev, { ...article, addedAt: new Date().toISOString() }]
     })
   }, [])
-  // Явное удаление (если нужно отдельная функция)
+
+  // Удаление из избранного
   const removeFromFavorites = useCallback((article) => {
-    if (!article || !article.url) return
     setFavorites(prev => prev.filter(fav => fav.url !== article.url))
   }, [])
+
+  // Обработчик выбора категории
   const handleCategorySelect = useCallback((category) => {
     setSelectedCategory(category)
     setActiveSection('category-news')
   }, [])
+
+  // Главное меню
   const MainMenu = () => (
     <div className="main-menu">
       <h1>📰 ИнфоПульс</h1>
       <p>Ваш AI-помощник для новостей с хронологией</p>
+      
       <div className="menu-grid">
-        <div className="menu-card" role="button" tabIndex={0} onClick={() => setActiveSection('chat')}>
+        <div className="menu-card" onClick={() => setActiveSection('chat')}>
           <div className="menu-icon">💬</div>
           <h3>Умный чат-бот</h3>
           <p>С хронологией событий</p>
         </div>
-        <div className="menu-card" role="button" tabIndex={0} onClick={() => setActiveSection('categories')}>
+        
+        <div className="menu-card" onClick={() => setActiveSection('categories')}>
           <div className="menu-icon">📂</div>
           <h3>Категории</h3>
           <p>Новости по темам</p>
         </div>
-        <div className="menu-card" role="button" tabIndex={0} onClick={() => setActiveSection('favorites')}>
+        
+        <div className="menu-card" onClick={() => setActiveSection('favorites')}>
           <div className="menu-icon">⭐</div>
           <h3>Избранное</h3>
           <p>Сохраненные новости: {favorites.length}</p>
         </div>
-        <div className="menu-card" role="button" tabIndex={0} onClick={() => setActiveSection('settings')}>
+        
+        <div className="menu-card" onClick={() => setActiveSection('settings')}>
           <div className="menu-icon">⚙️</div>
           <h3>Настройки</h3>
           <p>Персонализация</p>
         </div>
       </div>
+
       <div className="main-features">
         <h3>🎯 Новые возможности</h3>
         <div className="features-list">
-          <div className="feature-item"><span className="feature-icon">📅</span><span>Хронология событий</span></div>
-          <div className="feature-item"><span className="feature-icon">⏰</span><span>Фильтрация по времени</span></div>
-          <div className="feature-item"><span className="feature-icon">🔍</span><span>Умный анализ запросов</span></div>
+          <div className="feature-item">
+            <span className="feature-icon">📅</span>
+            <span>Хронология событий</span>
+          </div>
+          <div className="feature-item">
+            <span className="feature-icon">⏰</span>
+            <span>Фильтрация по времени</span>
+          </div>
+          <div className="feature-item">
+            <span className="feature-icon">🔍</span>
+            <span>Умный анализ запросов</span>
+          </div>
         </div>
       </div>
     </div>
   )
+
   return (
     <div className="app">
       {activeSection === 'main' && <MainMenu />}
+      
       {activeSection === 'chat' && (
-        <ChatBot
+        <ChatBot 
           onBack={() => setActiveSection('main')}
           onAddToFavorites={addToFavorites}
           favorites={favorites}
         />
       )}
+      
       {activeSection === 'categories' && (
-        <CategoriesSection
+        <CategoriesSection 
           onBack={() => setActiveSection('main')}
           onCategorySelect={handleCategorySelect}
         />
       )}
+      
       {activeSection === 'category-news' && selectedCategory && (
-        <CategoryNews
+        <CategoryNews 
           category={selectedCategory}
           onBack={() => setActiveSection('categories')}
           onAddToFavorites={addToFavorites}
           favorites={favorites}
         />
       )}
+      
       {activeSection === 'favorites' && (
-        <FavoritesSection
+        <FavoritesSection 
           onBack={() => setActiveSection('main')}
           favorites={favorites}
           onRemoveFromFavorites={removeFromFavorites}
         />
       )}
+      
       {activeSection === 'settings' && (
-        <SettingsSection onBack={() => setActiveSection('main')} />
+        <SettingsSection 
+          onBack={() => setActiveSection('main')}
+        />
       )}
     </div>
   )
