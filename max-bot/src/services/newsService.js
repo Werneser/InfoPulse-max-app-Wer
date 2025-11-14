@@ -1,72 +1,47 @@
 import { BOT_CONFIG } from '../config.js';
 
-const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY || ''; // ключ берётся из Vite env
-const NEWS_API_BASE_URL = 'https://newsapi.org/v2';
+const PROXY_BASE = '/api/news'; 
 
 export class NewsService {
     static async searchNews(query, pageSize = 5) {
         try {
-            if (!NEWS_API_KEY) {
-                console.error('❌ NEWS_API_KEY not set (import.meta.env.VITE_NEWS_API_KEY).');
-                return [];
+            if (!query) return [];
+            const url = `${PROXY_BASE}?endpoint=everything&q=${encodeURIComponent(query)}&pageSize=${encodeURIComponent(pageSize)}`;
+            const resp = await fetch(url);
+            if (!resp.ok) {
+                const body = await safeReadResponse(resp);
+                console.error('Proxy searchNews error', resp.status, body);
+                throw new Error(`Proxy HTTP error ${resp.status}`);
             }
-
-            console.log(`🔍 Поиск новостей по запросу: "${query}"`);
-
-            const url = `${NEWS_API_BASE_URL}/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&pageSize=${pageSize}&language=ru&apiKey=${NEWS_API_KEY}`;
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                const body = await safeReadResponse(response);
-                console.error('❌ NewsAPI searchNews HTTP error', response.status, body);
-                throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await resp.json();
+            if (data.status && data.status !== 'ok') {
+                console.error('NewsAPI returned error', data);
+                throw new Error(data.message || 'NewsAPI error');
             }
-
-            const data = await response.json();
-
-            if (data.status !== 'ok') {
-                console.error('❌ NewsAPI searchNews API error', data);
-                throw new Error(`NewsAPI error: ${data.message || 'unknown'}`);
-            }
-
-            console.log(`📰 Найдено новостей: ${data.articles?.length || 0}`);
             return data.articles || [];
-        } catch (error) {
-            console.error('❌ Ошибка при поиске новостей:', error);
-            throw new Error('Не удалось получить новости. Попробуйте позже.');
+        } catch (err) {
+            console.error('Ошибка при поиске новостей:', err);
+            return [];
         }
     }
-
     static async getTopHeadlines(category = 'general', pageSize = 5) {
         try {
-            if (!NEWS_API_KEY) {
-                console.error('❌ NEWS_API_KEY not set (import.meta.env.VITE_NEWS_API_KEY).');
-                return [];
+            const url = `${PROXY_BASE}?endpoint=top-headlines&category=${encodeURIComponent(category)}&pageSize=${encodeURIComponent(pageSize)}`;
+            const resp = await fetch(url);
+            if (!resp.ok) {
+                const body = await safeReadResponse(resp);
+                console.error('Proxy getTopHeadlines error', resp.status, body);
+                throw new Error(`Proxy HTTP error ${resp.status}`);
             }
-
-            console.log(`📊 Получение топ новостей категории: ${category}`);
-
-            const url = `${NEWS_API_BASE_URL}/top-headlines?category=${category}&pageSize=${pageSize}&language=ru&apiKey=${NEWS_API_KEY}`;
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                const body = await safeReadResponse(response);
-                console.error('❌ NewsAPI getTopHeadlines HTTP error', response.status, body);
-                throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await resp.json();
+            if (data.status && data.status !== 'ok') {
+                console.error('NewsAPI returned error', data);
+                throw new Error(data.message || 'NewsAPI error');
             }
-
-            const data = await response.json();
-
-            if (data.status !== 'ok') {
-                console.error('❌ NewsAPI getTopHeadlines API error', data);
-                throw new Error(`NewsAPI error: ${data.message || 'unknown'}`);
-            }
-
-            console.log(`📰 Найдено топ новостей: ${data.articles?.length || 0}`);
             return data.articles || [];
-        } catch (error) {
-            console.error('❌ Ошибка при получении топ новостей:', error);
-            throw new Error('Не удалось получить топ новости. Попробуйте позже.');
+        } catch (err) {
+            console.error('Ошибка при получении топ новостей:', err);
+            return [];
         }
     }
 
