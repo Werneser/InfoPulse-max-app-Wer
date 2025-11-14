@@ -25,9 +25,9 @@ jobs:
       - name: Build (node fallback for vite)
         run: |
           if [ -f node_modules/vite/bin/vite.js ]; then
-            node ./node_modules/vite/bin/vite.js dev
+            node ./node_modules/vite/bin/vite.js build
           else
-            npx vite dev
+            npx vite build
             fi
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
